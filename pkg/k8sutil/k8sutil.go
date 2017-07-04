@@ -27,6 +27,7 @@ package k8sutil
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/Sirupsen/logrus"
@@ -670,6 +671,14 @@ func (k *K8sutil) CreateClientMasterDeployment(deploymentType, baseImage string,
 										Value: "false",
 									},
 									v1.EnvVar{
+										Name:  "SEARCHGUARD_SSL_TRANSPORT_ENABLED",
+										Value: strconv.FormatBool(enableSSL),
+									},
+									v1.EnvVar{
+										Name:  "SEARCHGUARD_SSL_HTTP_ENABLED",
+										Value: strconv.FormatBool(enableSSL),
+									},
+									v1.EnvVar{
 										Name:  "HTTP_ENABLE",
 										Value: httpEnable,
 									},
@@ -785,7 +794,7 @@ func TemplateImagePullSecrets(ips []myspec.ImagePullSecrets) []v1.LocalObjectRef
 }
 
 // CreateDataNodeDeployment creates the data node deployment
-func (k *K8sutil) CreateDataNodeDeployment(replicas *int32, baseImage, storageClass string, dataDiskSize string, resources myspec.Resources,
+func (k *K8sutil) CreateDataNodeDeployment(replicas *int32, baseImage, storageClass string, dataDiskSize string, resources myspec.Resources, enableSSL bool,
 	imagePullSecrets []myspec.ImagePullSecrets, clusterName, statsdEndpoint, networkHost, namespace string) error {
 
 	fullDataDeploymentName := fmt.Sprintf("%s-%s", dataDeploymentName, clusterName)
@@ -864,6 +873,14 @@ func (k *K8sutil) CreateDataNodeDeployment(replicas *int32, baseImage, storageCl
 									v1.EnvVar{
 										Name:  "HTTP_ENABLE",
 										Value: "false",
+									},
+									v1.EnvVar{
+										Name:  "SEARCHGUARD_SSL_TRANSPORT_ENABLED",
+										Value: strconv.FormatBool(enableSSL),
+									},
+									v1.EnvVar{
+										Name:  "SEARCHGUARD_SSL_HTTP_ENABLED",
+										Value: strconv.FormatBool(enableSSL),
 									},
 									v1.EnvVar{
 										Name:  "ES_JAVA_OPTS",
