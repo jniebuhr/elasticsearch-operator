@@ -80,7 +80,7 @@ type K8sutil struct {
 // New creates a new instance of k8sutil
 func New(kubeCfgFile, masterHost string) (*K8sutil, error) {
 
-	client, tprclient, err := newKubeClient(kubeCfgFile)
+	client, tprclient, err := newKubeClient("/Users/grubio/.kube/config")
 
 	if err != nil {
 		logrus.Fatalf("Could not init Kubernetes client! [%s]", err)
@@ -717,7 +717,7 @@ func (k *K8sutil) CreateClientMasterDeployment(deploymentType, baseImage string,
 										MountPath: "/data",
 									},
 									v1.VolumeMount{
-										Name:      "es-certs",
+										Name:      secretName,
 										MountPath: "/elasticsearch/config/certs",
 									},
 								},
@@ -741,10 +741,10 @@ func (k *K8sutil) CreateClientMasterDeployment(deploymentType, baseImage string,
 								},
 							},
 							v1.Volume{
-								Name: "es-certs",
+								Name: secretName,
 								VolumeSource: v1.VolumeSource{
 									Secret: &v1.SecretVolumeSource{
-										SecretName: "es-certs",
+										SecretName: secretName,
 									},
 								},
 							},
@@ -753,6 +753,12 @@ func (k *K8sutil) CreateClientMasterDeployment(deploymentType, baseImage string,
 					},
 				},
 			},
+		}
+
+		// disable secrets volume mount when ssl is not enabled
+		if !enableSSL {
+			deployment.Spec.Template.Spec.Volumes = deployment.Spec.Template.Spec.Volumes[0 : len(deployment.Spec.Template.Spec.Volumes)-1]
+			deployment.Spec.Template.Spec.Containers[0].VolumeMounts = deployment.Spec.Template.Spec.Containers[0].VolumeMounts[0 : len(deployment.Spec.Template.Spec.Containers[0].VolumeMounts)-1]
 		}
 
 		_, err := k.Kclient.ExtensionsV1beta1().Deployments(namespace).Create(deployment)
@@ -912,7 +918,7 @@ func (k *K8sutil) CreateDataNodeDeployment(replicas *int32, baseImage, storageCl
 										MountPath: "/data",
 									},
 									v1.VolumeMount{
-										Name:      "es-certs",
+										Name:      secretName,
 										MountPath: "/elasticsearch/config/certs",
 									},
 								},
@@ -930,10 +936,10 @@ func (k *K8sutil) CreateDataNodeDeployment(replicas *int32, baseImage, storageCl
 						},
 						Volumes: []v1.Volume{
 							v1.Volume{
-								Name: "es-certs",
+								Name: secretName,
 								VolumeSource: v1.VolumeSource{
 									Secret: &v1.SecretVolumeSource{
-										SecretName: "es-certs",
+										SecretName: secretName,
 									},
 								},
 							},
@@ -967,6 +973,12 @@ func (k *K8sutil) CreateDataNodeDeployment(replicas *int32, baseImage, storageCl
 					},
 				},
 			},
+		}
+
+		// disable secrets volume mount when ssl is not enabled
+		if !enableSSL {
+			statefulSet.Spec.Template.Spec.Volumes = statefulSet.Spec.Template.Spec.Volumes[0 : len(statefulSet.Spec.Template.Spec.Volumes)-1]
+			statefulSet.Spec.Template.Spec.Containers[0].VolumeMounts = statefulSet.Spec.Template.Spec.Containers[0].VolumeMounts[0 : len(statefulSet.Spec.Template.Spec.Containers[0].VolumeMounts)-1]
 		}
 
 		_, err := k.Kclient.AppsV1beta1().StatefulSets(namespace).Create(statefulSet)

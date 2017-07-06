@@ -35,7 +35,7 @@ Following parameters are available to customize the elastic cluster:
 - data-node-replicas: Number of data node replicas
 - zones: Define which zones to deploy data nodes to for high availability (_Note: Zones are evenly distributed based upon number of data-node-replicas defined_)
 - data-volume-size: Size of persistent volume to attach to data nodes
-- elastic-search-image: Override the elasticsearch image (e.g. `upmcenterprises/docker-elasticsearch-kubernetes:5.3.1`)
+- elastic-search-image: Override the elasticsearch image (e.g. `upmcenterprises/docker-elasticsearch-kubernetes:5.3.1_3`)
 - [snapshot](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html)
   - scheduler-enabled: If the cron scheduler should be running to enable snapshotting
   - bucket-name: Name of S3 bucket to dump snaptshots
@@ -55,7 +55,7 @@ $ kubectl create secret generic es-certs --from-file=./certs/node-keystore.jks -
 ```
 ## Base image
 
-The base image used is `upmcenterprises/docker-elasticsearch-kubernetes:5.3.1` which can be overriden by addeding to the custom cluster you create _(See: [ThirdPartyResource](#thirdpartyresource) above)_. 
+The base image used is `upmcenterprises/docker-elasticsearch-kubernetes:5.3.1_3` which can be overriden by addeding to the custom cluster you create _(See: [ThirdPartyResource](#thirdpartyresource) above)_. 
 
 _NOTE: If no image is specified, the default noted previously is used._
 
