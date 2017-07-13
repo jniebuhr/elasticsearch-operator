@@ -581,7 +581,7 @@ func (k *K8sutil) DeleteStatefulSet(clusterName, namespace string) error {
 }
 
 // CreateClientMasterDeployment creates the client or master deployment
-func (k *K8sutil) CreateClientMasterDeployment(deploymentType, baseImage string, replicas *int32, javaOptions string,
+func (k *K8sutil) CreateClientMasterDeployment(deploymentType, baseImage string, replicas *int32, javaOptions string, enableSSL bool,
 	resources myspec.Resources, imagePullSecrets []myspec.ImagePullSecrets, clusterName, statsdEndpoint, networkHost, namespace string) error {
 
 	component := fmt.Sprintf("elasticsearch-%s", clusterName)
