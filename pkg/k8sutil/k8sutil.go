@@ -80,7 +80,7 @@ type K8sutil struct {
 // New creates a new instance of k8sutil
 func New(kubeCfgFile, masterHost string) (*K8sutil, error) {
 
-	client, tprclient, err := newKubeClient("/Users/grubio/.kube/config")
+	client, tprclient, err := newKubeClient(kubeCfgFile)
 
 	if err != nil {
 		logrus.Fatalf("Could not init Kubernetes client! [%s]", err)
